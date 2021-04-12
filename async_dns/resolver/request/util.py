@@ -25,6 +25,12 @@ class ConnectionPool:
             cls.pools[key] = pool
         return pool
 
+    @classmethod
+    def destroy_all(cls):
+        for pool in list(cls.pools.values()):
+            pool.destroy()
+        cls.pools.clear()
+
     def __init__(self, host, port, ssl, hostname, max_size):
         self.addr = host, port
         self.ssl = ssl
@@ -42,7 +48,7 @@ class ConnectionPool:
         self.check()
 
     def on_connection_error(self, exc):
-        logger.debug('[connect_error] %s:%port', self.hostname or self.addr[0], self.addr[1])
+        logger.debug('[connect_error] %s:%d', self.hostname or self.addr[0], self.addr[1])
         self.size -= 1
 
     def check(self):
@@ -123,7 +129,7 @@ class ConnectionPool:
     def destroy(self):
         for task in self.tasks:
             task.cancel()
-        for conn in self.connections:
+        for conn in list(self.connections):
             self.discard_connection(conn)
         for fut in self.requests:
             fut.cancel()
@@ -131,7 +137,6 @@ class ConnectionPool:
         self.connections.clear()
         self.requests.clear()
         self.pools.pop(self.key, None)
-
 
 class ConnectionHandle:
     def __init__(self, *k, **kw):

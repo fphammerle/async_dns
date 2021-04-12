@@ -2,9 +2,9 @@
 Request using UDP protocol.
 '''
 import asyncio
+import random
 import socket
-from async_dns.core import DNSMessage
-from .. import types, RandId
+from async_dns.core import DNSMessage, types, RandId
 
 class CallbackProtocol(asyncio.DatagramProtocol):
     '''
@@ -20,6 +20,7 @@ class CallbackProtocol(asyncio.DatagramProtocol):
         self.transport = transport
 
     def datagram_received(self, data, addr):
+        print('receive', data, addr)
         qid = data[:2]
         future = self.futures.pop(qid, None)
         if future is not None and not future.cancelled():
@@ -39,6 +40,7 @@ class CallbackProtocol(asyncio.DatagramProtocol):
             self.futures.pop(qid, None)
         future.add_done_callback(clear)
         loop.call_later(timeout, clear)
+        print('send', data, addr)
         self.transport.sendto(data, addr)
         return future
 

@@ -5,7 +5,7 @@ import asyncio
 import os
 from .query import Query
 from async_dns.core import *
-from async_dns.core.cache import CacheNode
+
 __all__ = ['Resolver', 'ProxyResolver']
 
 A_TYPES = types.A, types.AAAA
@@ -111,7 +111,6 @@ class ProxyResolver(Resolver):
     '''
     name = 'AsyncDNSProxyResolver'
     default_nameservers = core_config['default_nameservers']
-    recursive = 0
 
     def __init__(self, *k, proxies=None, **kw):
         super().__init__(*k, **kw)

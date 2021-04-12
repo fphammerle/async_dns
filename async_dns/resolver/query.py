@@ -1,5 +1,5 @@
 import asyncio
-from . import tcp, udp, doh
+from .request import tcp, udp, doh
 from async_dns.core import DNSError, DNSMessage, NameServers, logger, types, REQUEST, Record
 
 A_TYPES = types.A, types.AAAA
